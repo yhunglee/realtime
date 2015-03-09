@@ -155,26 +155,18 @@
 		}
 
 		private function newtalk () {
-			$url = 'http://newtalk.tw/rss.php';
+			$url = 'http://newtalk.tw/rss';
 			$doc = phpQuery::newDocument(file_get_contents($url));
 
 			$map = array();
 		
-			foreach ($doc['.cont_citizen_nav div'] as $div) {
-				$div = pq($div);
-
-				$category = $div->find('div')->text();
-				$category = substr($category, 0, strpos($category, ' '));
-
-				foreach ($div['ul > li > a'] as $anchor) {
-					$anchor = pq($anchor);
-
-					$map[] = array(
-							'category' => $category,
-							'label' => $anchor->text(),
-							'url' => 'http://newtalk.tw/' . $anchor->attr('href')
-						);
-				}
+			foreach ($doc['#rss .rss-item'] as $li) {
+				$li = pq($li);
+				$anchor = $li['a'];
+				$map[] = array(
+						'label' => $anchor->text(),
+						'url' => $anchor->attr('href')
+					);
 			}
 
 			return $map;
