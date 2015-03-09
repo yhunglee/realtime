@@ -97,7 +97,7 @@
 		font-weight: bold;
 	}
 
-	#ad-mid, #ad-bottom {
+	.ad {
 		background: #DDD;
 		margin: 12px;
 	}

@@ -191,6 +191,7 @@
 						break;
 					case 'newtalk':
 						$category = $item['rss']['label'];
+						$description = '';
 						break;
 					case 'nownews':
 						$tokens = explode('</p>', $description);
@@ -544,7 +545,7 @@
 		unlink(__DIR__ . '/data/' . $file);
 	}
 
-	$chunks = array_chunk($data, 20);
+	$chunks = array_chunk($data, 100);
 	$num = count($chunks);
 	$map = array();
 
