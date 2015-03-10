@@ -33,7 +33,7 @@
 	})();
 
 	if (typeof(Storage) !== 'undefined') {
-		$('body > ol').on('click', 'li > a', function() {
+		$('body > ol > li > a').click(function() {
 			var $article = $('body > article').last(),
 				$p = $article.children('p');
 

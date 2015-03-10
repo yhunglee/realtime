@@ -112,7 +112,7 @@
 	$i = 0;
 
 	foreach (json_decode(file_get_contents(__DIR__ . "/data/$page.json"), true) as $item) {
-		$date = date('Y-m-d H:i:s', $item['timestamp']);
+		$timestamp = $item['timestamp'];
 		$description = $item['description'];
 		$source = $sourceMap[$item['source']];
 
@@ -121,7 +121,7 @@
 		}
 ?>
 <article>
-	<p><a href="<?php echo $source['link'] ?>" target="_blank" ><?php echo $source['title'] ?></a> <time datetime="<?php echo $date ?>" ><?php echo $date ?></time></p>
+	<p><a href="<?php echo $source['link'] ?>" target="_blank" ><?php echo $source['title'] ?></a> <time datetime="<?php echo date('c', $timestamp) ?>" ><?php echo date('Y-m-d H:i:s', $timestamp) ?></time></p>
 	<h1><a href="<?php echo $item['link'] ?>" target="_blank" ><?php echo $item['title'] ?></a></h1>
 <?php
 		if ($description !== '') {
