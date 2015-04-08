@@ -120,7 +120,7 @@
 					}
 
 					$map2[$origin] = $link;
-					$description = preg_replace('/<img src="\/\/feeds.feedburner.com\/~r\/[^>]+>/', '', $description);
+					$description = preg_replace('/<img src="(https?:)?\/\/feeds.feedburner.com\/~r\/[^>]+>/', '', $description);
 				}
 
 				switch ($source) {
