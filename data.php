@@ -238,6 +238,9 @@
 					);
 
 				$item['link'] = $link;
+
+				$tidy = new tidy();
+				$description = $tidy->repairString($description, array('show-body-only' => true), 'utf8');
 				$item['description'] = $description;
 
 				if (isset($category)) {
