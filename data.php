@@ -26,7 +26,28 @@
 			$url = $rss['url'];
 
 			try {
-				$doc = phpQuery::newDocumentXML(str_replace(array('', '', '&'), array('', '', '&amp;'), file_get_contents($url)));
+				$xml = file_get_contents($url);
+
+				if ($xml === false) {
+					$ch = curl_init();
+					curl_setopt($ch, CURLOPT_URL, $url);
+					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+					$proxies = array(
+							'107.182.17.149:8089',
+							'107.182.17.149:3127',
+							'210.245.31.15:80',
+							'125.62.22.47:9999',
+							'162.208.49.45:8089',
+							'162.248.53.68:10016',
+							'162.208.49.45:3127'
+						);
+
+					curl_setopt($ch, CURLOPT_PROXY, $proxies[rand(0, count($proxies) - 1)]);
+					$xml = curl_exec($ch);
+				}
+
+				$doc = phpQuery::newDocumentXML(str_replace(array('', '', '&'), array('', '', '&amp;'), $xml));
 			} catch (Exception $e) {
 				echo "Loading RSS Fialed: $url\n";
 			}
