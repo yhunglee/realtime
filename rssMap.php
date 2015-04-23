@@ -163,8 +163,18 @@
 			foreach ($doc['#rss .rss-item'] as $li) {
 				$li = pq($li);
 				$anchor = $li['a'];
+				$label = trim($anchor->text());
+
+				if ($label !== '全部' &&
+					$label !== '評論' &&
+					$label !== '開講無疆界' &&
+					$label !== '公民連線'
+					) {
+					continue;
+				}
+
 				$map[] = array(
-						'label' => $anchor->text(),
+						'label' => $label,
 						'url' => $anchor->attr('href')
 					);
 			}
