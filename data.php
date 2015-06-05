@@ -306,13 +306,16 @@
 					'society' => '社會',
 					'local' => '地方',
 					'life' => '生活',
-					'opinion' => '言論',
+					'talk' => '言論',
 					'world' => '國際',
 					'business' => '財經',
 					'sports' => '體育',
-					'entertainment' => '影視',
+					'ent' => '娛樂',
 					'consumer' => '消費',
-					'supplement' => '副刊'
+					'supplement' => '副刊',
+					'istyle' => 'iStyle',
+					'3c' => '3C',
+					'auto' => '汽車'
 				);
 
 			$data = array();
@@ -354,11 +357,13 @@
 					$anchor = $li->children('a');
 					$href = $anchor->attr('href');
 					$tokens = explode('/', $href);
-					$category = $map[$tokens[2]];
+					$token = $tokens[2];
+					$domain = substr($token, 0, strpos($token, '.'));
+					$category = $map[$domain === 'news' ? $tokens[4] : $domain];
 
 					$data[] = array(
 							'title' => $anchor->text(),
-							'link' => 'http://news.ltn.com.tw' . $href,
+							'link' => $href,
 							'category' => $category,
 							'timestamp' => strtotime(trim($li->children('span')->text())),
 							'description' => preg_replace('#<img([^>]*) src=["\']http://([^"\']*)["\']([^>]*)>#', '<img$1 src="https://i1.wp.com/$2"$3>', (string) $li->children('img')),
