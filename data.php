@@ -311,6 +311,7 @@
 					'business' => '財經',
 					'sports' => '體育',
 					'ent' => '娛樂',
+					'entertainment' => '娛樂',
 					'consumer' => '消費',
 					'supplement' => '副刊',
 					'istyle' => 'iStyle',
