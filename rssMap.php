@@ -116,7 +116,7 @@
 		}
 
 		private function cna () {
-			$url = 'http://www.cna.com.tw/rss/index.aspx';
+			$url = 'http://www.cna.com.tw/about/rss.aspx';
 			$doc = phpQuery::newDocument(file_get_contents($url));
 
 			$map = array();
