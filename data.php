@@ -172,6 +172,13 @@
 							'/<link href="[^>]+>/'), '', $description);
 						
 						$description = str_replace(array('<h4>', '</h4>', '<a href="####" class="photo_pop_icon">分享</a>', '...'), array('<div>', '</div>', '', ''), $description);
+
+						$description = preg_replace(
+								'/<img src="http:\/\/pgw.udn.com.tw\/gw\/photo.php\?u=([^&]*)&[^"]*">/',
+								'<img src="$1">',
+								$description
+							);
+
 						$category = $item['rss']['label'];
 						break;
 					case 'libertytimes':
@@ -213,33 +220,6 @@
 					case 'newtalk':
 						$category = $item['rss']['label'];
 						$description = '';
-						break;
-					case 'nownews':
-						$tokens = explode('</p>', $description);
-						$n = count($tokens);
-
-						for ($i = 0; $i < $n; ++$i) {
-							$token = trim(strip_tags($tokens[$i]));
-
-							if (strpos($token, '／') !== false && strpos($token, '報導') !== false) {
-								continue;
-							}
-
-							if (strpos($token, '（圖／') !== false) {
-								continue;
-							}
-
-							if (strlen($token) <= 60) {
-								continue;
-							}
-
-							$description = $token;
-							break;
-						}
-
-						if ($i === $n) {
-							$description = '';
-						}
 				}
 
 				$description = preg_replace(
@@ -465,6 +445,35 @@
 
 			return $data;
 		}
+
+		private function nownews () {
+			$data = array();
+
+			$ch = curl_init();
+
+			curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36');
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_URL, 'http://www.nownews.com');
+
+			$doc = phpQuery::newDocument(curl_exec($ch));
+			$now = time();
+
+			foreach ($doc['#realtime > .list > li'] as $li) {
+				$li = pq($li);
+				$anchor = $li['a'];
+				$time = strtotime($li['span']->text());
+
+				$data[] = array(
+					'title' => $anchor->text(),
+					'link' => 'http://www.nownews.com/' . $anchor->attr('href'),
+					'timestamp' => $time > $now ? $time - 86400 : $time,
+					'description' => '',
+					'source' => 'nownews'
+				);
+			}
+
+			return $data;
+		}
 	}
 
 	function combine($chunks) {
@@ -535,7 +544,7 @@
 	}
 
 	$workers = array();
-	$sources = array('chinatimes', 'libertytimes', 'cna', 'ettoday');
+	$sources = array('chinatimes', 'libertytimes', 'cna', 'ettoday', 'nownews');
 
 	foreach ($sources as $source) {
 		$worker = new PageThread($source);
@@ -556,7 +565,7 @@
 	foreach ($sources as $source) {
 		$chunks[] = json_decode(file_get_contents(__DIR__ . '/temp/p.' . $source), true);
 	}
-    
+
 	$files = array_diff(scandir(__DIR__ . '/data'), array('.', '..', '.gitignore'));
 
 	foreach ($files as $file) {
@@ -585,12 +594,12 @@
 
 
 	for ($i = 0; $i < $count; ++$i) {
-        $path = __DIR__ . '/temp/r3.' . $i;
+		$path = __DIR__ . '/temp/r3.' . $i;
 
-        if (file_exists($path)) {
-            $map = array_merge($map, json_decode(file_get_contents($path), true));
-            unlink($path);
-        }
+		if (file_exists($path)) {
+			$map = array_merge($map, json_decode(file_get_contents($path), true));
+			unlink($path);
+		}
 	}
 
 	file_put_contents(__DIR__ . '/cache/redirect.json', $map);

@@ -207,30 +207,6 @@
 
 			return $map;
 		}
-
-		private function nownews () {
-			$url = 'http://member.nownews.com/membersite/rss.php';
-			$doc = phpQuery::newDocument(file_get_contents($url));
-
-			$map = array();
-
-			foreach ($doc['#rssnews tr'] as $tr) {
-				$tr = pq($tr);
-				$td = $tr['td'];
-				$label = $td->eq(0)->text();
-
-				if ($label !== '即時新聞') {
-					continue;
-				}
-
-				$map[] = array(
-						'label' => $label,
-						'url' => $td->eq(1)->children('a')->attr('href')
-					);
-			}
-
-			return $map;
-		}
 	}
 
 
@@ -239,7 +215,7 @@
 
 	
 	$workers = array();
-	$sources = array('udn', 'chinatimes', 'appledaily', 'libertytimes', 'cna', 'storm', 'newtalk', 'ettoday', 'nownews');
+	$sources = array('udn', 'chinatimes', 'appledaily', 'libertytimes', 'cna', 'storm', 'newtalk', 'ettoday');
 
 	foreach ($sources as $source) {
 		$worker = new WorkerThread($source);
