@@ -64,7 +64,7 @@
 				}
 				else {
 					$timestamp = strtotime(str_replace(array('年', '月', '日'), array('/', '/', ''), $pubDate));
-				}				
+				}
 
 				$link = $item['link']->eq(0)->text();
 				$description = htmlspecialchars_decode(htmlspecialchars_decode(str_replace(array('<![CDATA[', ']]>'), '', $item['description']->html())));
@@ -86,7 +86,7 @@
 				$ref['rss'] = $rss;
 			}
 
-			return $data;			
+			return $data;
 		}
 
 		private function filter ($data) {
@@ -170,7 +170,7 @@
 							'/<div class="photo_pop">.*?<\/div>/s',
 							'/<div class="video-container">.*?<\/div>/s',
 							'/<link href="[^>]+>/'), '', $description);
-						
+
 						$description = str_replace(array('<h4>', '</h4>', '<a href="####" class="photo_pop_icon">分享</a>', '...'), array('<div>', '</div>', '', ''), $description);
 
 						$description = preg_replace(
@@ -228,7 +228,7 @@
 							'#<img([^>]*) src=["\']http://([^"\']*)["\']([^>]*)>#',
 							'/\.\.\./',
 							'/…/u'
-						), 
+						),
 						array(
 							'',
 							'<img$1 src="https://i1.wp.com/$2"$3>',
@@ -263,7 +263,7 @@
 				file_put_contents(__DIR__ . '/temp/r3.' . $this->key, json_encode($map2));
 			}
 
-			return $data;	
+			return $data;
 		}
 	}
 
@@ -465,7 +465,7 @@
 
 				$data[] = array(
 					'title' => $anchor->text(),
-					'link' => 'http://www.nownews.com/' . $anchor->attr('href'),
+					'link' => 'http://www.nownews.com' . $anchor->attr('href'),
 					'timestamp' => $time > $now ? $time - 86400 : $time,
 					'description' => '',
 					'source' => 'nownews'
@@ -499,7 +499,7 @@
 				}
 
 				$key = $item['source'] . '@' . $item['title'];
-				
+
 				if (isset($map2[$key])) {
 					continue;
 				}
