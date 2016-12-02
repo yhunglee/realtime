@@ -117,7 +117,8 @@
 					$image = $item['image'];
 				}
 
-				if (substr($link, 0, 31) === 'http://feedproxy.google.com/~r/') {
+				if (substr($link, 0, 31) === 'http://feedproxy.google.com/~r/' ||
+					substr($link, 0, 29) === 'http://feeds.initium.news/~r/') {
 					$origin = $link;
 
 					if (isset($map[$origin])) {
@@ -474,6 +475,30 @@
 
 			return $data;
 		}
+
+		private function setn () {
+			$data = array();
+
+			for ($i = 1; $i <= 10; ++$i) {
+				$doc = phpQuery::newDocument('<meta charset="UTF-8">' . file_get_contents('http://www.setn.com/ViewAll.aspx?p=' . $i));
+
+				foreach ($doc['.viewallContent .box li'] as $li) {
+					$li = pq($li);
+					$anchor = $li['a'];
+
+					$data[] = array(
+							'title' => trim($anchor->text()),
+							'link' => 'http://www.setn.com/' . $anchor->attr('href'),
+							'category' => trim($li['.tab_list_type']->text()),
+							'timestamp' => strtotime($li['.tab_list_time']->text()),
+							'description' => '',
+							'source' => 'setn'
+						);
+				}
+			}
+
+			return $data;
+		}
 	}
 
 	function combine($chunks) {
@@ -544,7 +569,7 @@
 	}
 
 	$workers = array();
-	$sources = array('chinatimes', 'libertytimes', 'cna', 'ettoday', 'nownews');
+	$sources = array('chinatimes', 'libertytimes', 'cna', 'ettoday', 'nownews', 'setn');
 
 	foreach ($sources as $source) {
 		$worker = new PageThread($source);

@@ -233,6 +233,34 @@
 		$map[$source] = json_decode(file_get_contents(__DIR__ . '/temp/r.' . $source), true);
 	}
 
+	$map['twreporter'] = array(
+		array(
+			'label' => '報導者',
+			'url' => 'https://www.twreporter.org/a/rss2.xml'
+		)
+	);
+
+	$map['theinitium'] = array(
+		array(
+			'label' => '端傳媒',
+			'url' => 'http://feeds.initium.news/theinitium'
+		)
+	);
+
+	$map['upmedia'] = array(
+		array(
+			'label' => '上報',
+			'url' => 'http://www.upmedia.mg/createRSS.php?Type=all'
+		)
+	);
+
+	$map['mirrormedia'] = array(
+		array(
+			'label' => '鏡傳媒',
+			'url' => 'https://www.mirrormedia.mg/story/rss.xml'
+		)
+	);
+
 	file_put_contents(__DIR__ . '/rssMap.json', json_encode($map));
 
 

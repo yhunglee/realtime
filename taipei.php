@@ -54,6 +54,26 @@
 			'nownews' => array(
 					'title' => 'NOWnews',
 					'link' => 'http://nownews.com'
+				),
+			'twreporter' => array(
+					'title' => '報導者',
+					'link' => 'https://www.twreporter.org'
+				),
+			'theinitium' => array(
+					'title' => '端傳媒',
+					'link' => 'https://theinitium.com'
+				),
+			'upmedia' => array(
+					'title' => '上報',
+					'link' => 'http://www.upmedia.mg'
+				),
+			'mirrormedia' => array(
+					'title' => '鏡傳媒',
+					'link' => 'https://www.mirrormedia.mg'
+				),
+			'setn' => array(
+					'title' => '三立新聞網',
+					'link' => 'http://www.setn.com'
 				)
 		);
 
