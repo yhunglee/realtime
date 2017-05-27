@@ -257,7 +257,7 @@
 	$map['mirrormedia'] = array(
 		array(
 			'label' => '鏡傳媒',
-			'url' => 'https://www.mirrormedia.mg/story/rss.xml'
+			'url' => 'https://www.mirrormedia.mg/rss/rss.xml'
 		)
 	);
 
