@@ -24,10 +24,6 @@
 			foreach ($doc['#rss_list .group'] as $group) {
 				$group = pq($group);
 
-				if ($group['h3']->text() !== '即時') {
-					continue;
-				}
-
 				foreach ($group['dl dt a'] as $anchor) {
 					$anchor = pq($anchor);
 					$href = $anchor->attr('href');
@@ -45,28 +41,19 @@
 
 		private function chinatimes () {
 			$url = 'http://www.chinatimes.com/syndication/rss';
-			$tokens = explode('<hr>', file_get_contents($url));
-			$doc = phpQuery::newDocument($tokens[1]);
+			$tokens = explode('<li>即時新聞', file_get_contents($url));
+			$token = trim($tokens[1]);
+			$doc = phpQuery::newDocument(substr($token, 0, strpos($token, '</ul>') + 5));
 
 			$map = array();
 
-			foreach ($doc['ul > li'] as $group) {
-				$group = pq($group);
-				$category = $group->html();
-				$category = trim(substr($category, 0, strpos($category, ' ')));
+			foreach ($doc['.rssli'] as $li) {
+				$li = pq($li);
 
-				if ($category !== '即時新聞') {
-					continue;
-				}
-
-				foreach ($group['.rssli'] as $li) {
-					$li = pq($li);
-
-					$map[] = array(
-							'label' => $li['span']->eq(0)->text(),
-							'url' => $li['a']->attr('href')
-						);
-				}
+				$map[] = array(
+						'label' => $li['span']->eq(0)->text(),
+						'url' => $li['a']->attr('href')
+					);
 			}
 
 			return $map;
@@ -102,12 +89,12 @@
 			$doc = phpQuery::newDocument(file_get_contents('http://news.ltn.com.tw/service?p=8'));
 			$map = array();
 
-			foreach ($doc['.Txml tr']->slice(1) as $tr) {
+			foreach ($doc['.ltnrss tr']->slice(1) as $tr) {
 				$tr = pq($tr);
 				$td = $tr['td'];
 
 				$map[] = array(
-						'label' => substr($td->eq(0)->text(), 3),
+						'label' => $td->eq(0)->text(),
 						'url' => $td->eq(2)->find('a')->attr('href')
 					);
 			}
