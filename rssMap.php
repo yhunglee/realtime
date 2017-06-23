@@ -16,29 +16,6 @@
 			file_put_contents(__DIR__ . '/temp/r.' . $source, json_encode($this->$source()));
 		}
 
-		private function udn () {
-			$url = 'http://udn.com/rssfeed/lists/2';
-			$doc = phpQuery::newDocument(file_get_contents($url));
-			$map = array();
-
-			foreach ($doc['#rss_list .group'] as $group) {
-				$group = pq($group);
-
-				foreach ($group['dl dt a'] as $anchor) {
-					$anchor = pq($anchor);
-					$href = $anchor->attr('href');
-					$label = $anchor->text();
-
-					$map[] = array(
-							'label' => $label,
-							'url' => 'http://udn.com' . $href
-						);
-				}
-			}
-
-			return $map;
-		}
-
 		private function chinatimes () {
 			$url = 'http://www.chinatimes.com/syndication/rss';
 			$tokens = explode('<li>即時新聞', file_get_contents($url));
@@ -202,7 +179,7 @@
 
 	
 	$workers = array();
-	$sources = array('udn', 'chinatimes', 'appledaily', 'libertytimes', 'cna', 'storm', 'newtalk', 'ettoday');
+	$sources = array('chinatimes', 'appledaily', 'libertytimes', 'cna', 'storm', 'newtalk', 'ettoday');
 
 	foreach ($sources as $source) {
 		$worker = new WorkerThread($source);
@@ -219,6 +196,13 @@
 	foreach ($sources as $source) {
 		$map[$source] = json_decode(file_get_contents(__DIR__ . '/temp/r.' . $source), true);
 	}
+
+	$map['udn'] = array(
+		array(
+			'label' => '聯合新聞網',
+			'url' => 'https://udn.com/rssfeed/latest'
+		)
+	);
 
 	$map['twreporter'] = array(
 		array(
