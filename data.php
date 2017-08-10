@@ -454,23 +454,27 @@
 
 			curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36');
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_URL, 'http://www.nownews.com');
 
-			$doc = phpQuery::newDocument(curl_exec($ch));
-			$now = time();
+			for ($i = 0; $i < 10; ++$i) {
+				curl_setopt($ch, CURLOPT_URL, 'https://m.nownews.com/news/nextCategory?page=' . $i . '&url=/news/category/index');
 
-			foreach ($doc['#realtime > .list > li'] as $li) {
-				$li = pq($li);
-				$anchor = $li['a'];
-				$time = strtotime($li['span']->text());
+				$doc = phpQuery::newDocument(curl_exec($ch));
 
-				$data[] = array(
-					'title' => $anchor->text(),
-					'link' => 'http://www.nownews.com' . $anchor->attr('href'),
-					'timestamp' => $time > $now ? $time - 86400 : $time,
-					'description' => '',
-					'source' => 'nownews'
-				);
+				foreach ($doc['.news-block > .mui-container-fluid > .mui-row > a'] as $anchor) {
+					$anchor = pq($anchor);
+					$time = strtotime($anchor['.news-info > .info-caption']->text());
+					$link = $anchor->attr('href');
+					$link = 'https://www.nownews.com/news/' . date('Ymd', $time) . substr($link, strrpos($link, '/'));
+
+					$data[] = array(
+						'link' => $link,
+						'timestamp' => $time,
+						'source' => 'nownews',
+						'title' => $anchor['.news-info > .category-newstitle']->text(),
+						'description' => '',
+						'image' => $anchor['.news-main-image']->attr('src')
+					);
+				}
 			}
 
 			return $data;
