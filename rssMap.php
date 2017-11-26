@@ -37,7 +37,7 @@
 		}
 
 		private function appledaily () {
-			$url = 'http://www.appledaily.com.tw/rss';
+			$url = 'https://tw.appledaily.com/rss';
 			$doc = phpQuery::newDocument(file_get_contents($url));
 
 			$map = array();
@@ -54,7 +54,7 @@
 
 					$map[] = array(
 							'label' => $anchor->text(),
-							'url' => 'http://www.appledaily.com.tw/' . $anchor->attr('href')
+							'url' => 'https://tw.appledaily.com/' . $anchor->attr('href')
 						);
 				}
 			}
