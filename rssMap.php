@@ -28,7 +28,7 @@
 				$li = pq($li);
 
 				$map[] = array(
-						'label' => $li['span']->eq(0)->text(),
+						'label' => trim($li['span']->eq(0)->text()),
 						'url' => $li['a']->attr('href')
 					);
 			}
@@ -106,12 +106,12 @@
 
 			$map = array();
 
-			foreach ($doc['.subscribe-list > li > a'] as $anchor) {
+			foreach ($doc['#subNavs_accContent > a'] as $anchor) {
 				$anchor = pq($anchor);
 
 				$map[] = array(
 						'label' => $anchor->text(),
-						'url' => 'http://www.storm.mg' . $anchor->attr('href')
+						'url' => $anchor->attr('href')
 					);
 			}
 
@@ -124,7 +124,7 @@
 
 			$map = array();
 		
-			foreach ($doc['#rss .rss-item'] as $li) {
+			foreach ($doc['.rss-list li'] as $li) {
 				$li = pq($li);
 				$anchor = $li['a'];
 				$label = trim($anchor->text());
