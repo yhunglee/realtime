@@ -303,58 +303,41 @@
 			$data = array();
 
 			for ($i = 1; $i <= 20; ++$i) {
-				$url = 'http://news.ltn.com.tw/list/BreakingNews?page=' . $i;
+				$url = 'http://news.ltn.com.tw/list/breakingnews/all/' . $i;
 				$doc = phpQuery::newDocument(file_get_contents($url));
-				$head = $doc['.NsFcrt'];
 
-				if ($head->count() !== 0) {
-					$title = $head['#NsFctitle'];
-					$photo = $head['#NsFcphoto'];
-					$content = $head['#NsFccontent'];
-					$anchor = $title->children('a')->eq(0);
-					$span = $title->children('span')->eq(0);
-
-					$href = $anchor->attr('href');
-					$tokens = explode('/', $href);
-					$category = $map[$tokens[2]];
-
-					$anchor2 = $photo['a'];
-					$anchor2->attr('href', 'http://news.ltn.com.tw' . $anchor2->attr('href'));
-
-					$description = preg_replace('#<img([^>]*) src=["\']http://([^"\']*)["\']([^>]*)>#', '<img$1 src="https://i1.wp.com/$2"$3>', $photo->html() . $content->html());
-					$description = str_replace('...', ' ... ', $description);
-
-					$data[] = array(
-							'title' => $anchor->text(),
-							'link' => 'http://news.ltn.com.tw' . $href,
-							'category' => $category,
-							'timestamp' => strtotime(substr($span->text(), 1, -1)),
-							'description' => $description,
-							'source' => 'libertytimes'
-						);
-				}
-
-				foreach ($doc['#newslistul .lipic'] as $li) {
+				foreach ($doc['.list.imm > li'] as $li) {
 					$li = pq($li);
-					$anchor = $li->children('a');
+					$anchor2 = $li->children('a');
+					$anchor = $anchor2->eq(0);
+					$anchor2 = $anchor2->eq(1);
+
 					$href = $anchor->attr('href');
 					$tokens = explode('/', $href);
 					$token = $tokens[2];
 					$domain = substr($token, 0, strpos($token, '.'));
 					$category = $map[$domain === 'news' ? $tokens[4] : $domain];
 
-					$data[] = array(
-							'title' => $anchor->text(),
+					$item = array(
+							'title' => trim($anchor2->children('p')->text()),
 							'link' => $href,
 							'category' => $category,
-							'timestamp' => strtotime(trim($li->children('span')->text())),
-							'description' => preg_replace('#<img([^>]*) src=["\']http://([^"\']*)["\']([^>]*)>#', '<img$1 src="https://i1.wp.com/$2"$3>', (string) $li->children('img')),
+							'timestamp' => strtotime($anchor2->children('span')->text()),
+							'description' => '',
 							'source' => 'libertytimes'
 						);
-				}
 
-				if ((string) $doc['#page']->children()->slice(-1) === '<span>最後</span>') {
-					break;
+					$image = $anchor->children('img')->attr('src');
+
+					if ($image !== '') {
+						if (substr($image, 0, 7) === 'http://') {
+							$image = 'https://i2.wp.com/' . substr($image, 7);
+						}
+
+						$item['image'] = $image;
+					}
+
+					$data[] = $item;
 				}
 			}
 
