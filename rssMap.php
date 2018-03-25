@@ -4,7 +4,7 @@
 
 	require(__DIR__ . '/phpQuery/phpQuery.php');
 
-	class WorkerThread extends Thread {
+	class RssWorker {
 		private $source;
 
 		public function __construct ($source) {
@@ -177,19 +177,18 @@
 
 	$start_time = time();
 
-	
-	$workers = array();
 	$sources = array('chinatimes', 'appledaily', 'libertytimes', 'cna', 'storm', 'newtalk', 'ettoday');
 
 	foreach ($sources as $source) {
-		$worker = new WorkerThread($source);
-		$worker->start();
-		$workers[] = $worker;
+        $pid = pcntl_fork();
+
+        if ($pid === 0) {
+			(new RssWorker($source))->run();
+			die();
+        }
 	}
 
-	foreach ($workers as $worker) {
-		$worker->join();
-	}
+	while (pcntl_wait($status) !== -1);
 
 	$map = array();
 

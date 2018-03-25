@@ -6,7 +6,7 @@
 	require(__DIR__ . '/phpQuery/phpQuery.php');
 
 
-	class RssThread extends Thread {
+	class RssWorker {
 		private $source;
 		private $rss;
 		private $key;
@@ -268,7 +268,7 @@
 		}
 	}
 
-	class PageThread extends Thread {
+	class PageWorker {
 		private $source;
 
 		public function __construct ($source) {
@@ -548,42 +548,39 @@
 
 
 	$max = 30;
-	$workers = array();
 	$count = 0;
 
 	foreach (json_decode(file_get_contents(__DIR__ . '/rssMap.json'), true) as $source => $rsses) {
 		foreach ($rsses as $rss) {
-			$worker = new RssThread($source, $rss, $count);
-			$worker->start();
-			$workers[] = $worker;
+			$pid = pcntl_fork();
+
+			if ($pid === 0) {
+				(new RssWorker($source, $rss, $count))->run();
+				die();
+			}
+
 			++$count;
 
 			if ($count % $max === 0) {
-				foreach ($workers as $worker) {
-					$worker->join();
-				}
-
-				$workers = array();
+				while (pcntl_wait($status) !== -1);
 			}
 		}
 	}
 
-	foreach ($workers as $worker) {
-		$worker->join();
-	}
+	while (pcntl_wait($status) !== -1);
 
-	$workers = array();
 	$sources = array('chinatimes', 'libertytimes', 'cna', 'ettoday', 'nownews', 'setn');
 
 	foreach ($sources as $source) {
-		$worker = new PageThread($source);
-		$worker->start();
-		$workers[] = $worker;
+		$pid = pcntl_fork();
+
+		if ($pid === 0) {
+			(new PageWorker($source))->run();
+			die();
+		}
 	}
 
-	foreach ($workers as $worker) {
-		$worker->join();
-	}
+	while (pcntl_wait($status) !== -1);
 
 	$chunks = array();
 
