@@ -137,7 +137,11 @@
 		$source = $sourceMap[$item['source']];
 
 		if (isset($item['image'])) {
-			$description .= '<br><img src="' . $item['image'] . '">';
+			if ($description !== '') {
+				$description .= '<br>';
+			}
+
+			$description .= '<img src="' . $item['image'] . '">';
 		}
 ?>
 <article>
