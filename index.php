@@ -141,7 +141,7 @@
 				$description .= '<br>';
 			}
 
-			$description .= '<img src="' . $item['image'] . '">';
+			$description .= '<img referrerpolicy="no-referrer" src="' . $item['image'] . '">';
 		}
 ?>
 <article>

@@ -162,7 +162,7 @@
 						}
 						break;
 					case 'chinatimes':
-						$description = str_replace(array('<img src="http://www.chinatimes.com/images/rss-logo-ctoppa.png">', '<img src="http://www.chinatimes.com/images/logo-1200x635.jpg">'), '', $description) . '...';
+						$description = str_replace('<img src="//cache.chinatimes.com/images/logo-1200x635.jpg">', '', $description) . '...';
 						$description = preg_replace('/<img src="[^"]+"[^>]*>/', '$0<br>', $description);
 						$category = $item['rss']['label'];
 						break;
@@ -175,7 +175,7 @@
 						$description = str_replace(array('<h4>', '</h4>', '<a href="####" class="photo_pop_icon">分享</a>', '...'), array('<div>', '</div>', '', ''), $description);
 
 						$description = preg_replace(
-								'/<img src="http:\/\/pgw.udn.com.tw\/gw\/photo.php\?u=([^&]*)&[^"]*">/',
+								'/\'https:\\/\\/pgw\\.udn\\.com\\.tw\\/gw\\/photo\\.php\\?u=([^&]*)&[^\']*\'>/',
 								'<img src="$1">',
 								$description
 							);
