@@ -297,7 +297,8 @@
 					'supplement' => '副刊',
 					'istyle' => 'iStyle',
 					'3c' => '3C',
-					'auto' => '汽車'
+					'auto' => '汽車',
+					'playing' => '玩咖'
 				);
 
 			$data = array();
@@ -467,17 +468,17 @@
 			$data = array();
 
 			for ($i = 1; $i <= 10; ++$i) {
-				$doc = phpQuery::newDocument('<meta charset="UTF-8">' . file_get_contents('http://www.setn.com/ViewAll.aspx?p=' . $i));
+				$doc = phpQuery::newDocument(file_get_contents('https://www.setn.com/ViewAll.aspx?p=' . $i));
 
-				foreach ($doc['.viewallContent .box li'] as $li) {
-					$li = pq($li);
-					$anchor = $li['a'];
+				foreach ($doc['.media-body'] as $div) {
+					$div = pq($div);
+					$anchor = $div['.media-heading > a'];
 
 					$data[] = array(
 							'title' => trim($anchor->text()),
-							'link' => 'http://www.setn.com/' . $anchor->attr('href'),
-							'category' => trim($li['.tab_list_type']->text()),
-							'timestamp' => strtotime($li['.tab_list_time']->text()),
+							'link' => 'https://www.setn.com/' . $anchor->attr('href'),
+							'category' => $div['.newslabel-tab > a']->text(),
+							'timestamp' => strtotime(date('Y') . '/' . $div['ul > li > span']->text()),
 							'description' => '',
 							'source' => 'setn'
 						);
