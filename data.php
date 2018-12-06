@@ -439,24 +439,28 @@
 			curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36');
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-			for ($i = 0; $i < 10; ++$i) {
-				curl_setopt($ch, CURLOPT_URL, 'https://m.nownews.com/news/nextCategory?page=' . $i . '&url=/news/category/index');
+			for ($i = 1; $i <= 10; ++$i) {
+				$url = $i === 1 ?
+					'https://www.nownews.com' :
+					"https://www.nownews.com/page/$i/";
 
-				$doc = phpQuery::newDocument(curl_exec($ch));
+				curl_setopt($ch, CURLOPT_URL, $url);
 
-				foreach ($doc['.news-block > .mui-container-fluid > .mui-row > a'] as $anchor) {
-					$anchor = pq($anchor);
-					$time = strtotime($anchor['.news-info > .info-caption']->text());
-					$link = $anchor->attr('href');
-					$link = 'https://www.nownews.com/news/' . date('Ymd', $time) . substr($link, strrpos($link, '/'));
+				$html = curl_exec($ch);
+
+				$doc = phpQuery::newDocument($html);
+
+				foreach ($doc['.td-block-row .td_module_wrap'] as $div) {
+					$div = pq($div);
+					$anchor = $div['.td-module-thumb > a'];
 
 					$data[] = array(
-						'link' => $link,
-						'timestamp' => $time,
+						'link' => $anchor->attr('href'),
+						'timestamp' => strtotime($div['time']->attr('datetime')),
 						'source' => 'nownews',
-						'title' => $anchor['.news-info > .category-newstitle']->text(),
+						'title' => $anchor->attr('title'),
 						'description' => '',
-						'image' => $anchor['.news-main-image']->attr('src')
+						'image' => $anchor['img']->attr('src')
 					);
 				}
 			}
@@ -470,15 +474,15 @@
 			for ($i = 1; $i <= 10; ++$i) {
 				$doc = phpQuery::newDocument(file_get_contents('https://www.setn.com/ViewAll.aspx?p=' . $i));
 
-				foreach ($doc['.media-body'] as $div) {
+				foreach ($doc['.NewsList > .col-sm-12 > div'] as $div) {
 					$div = pq($div);
-					$anchor = $div['.media-heading > a'];
+					$anchor = $div['.view-li-title > a'];
 
 					$data[] = array(
 							'title' => trim($anchor->text()),
 							'link' => 'https://www.setn.com/' . $anchor->attr('href'),
 							'category' => $div['.newslabel-tab > a']->text(),
-							'timestamp' => strtotime(date('Y') . '/' . $div['ul > li > span']->text()),
+							'timestamp' => strtotime(date('Y') . '/' . $div['time']->text()),
 							'description' => '',
 							'source' => 'setn'
 						);
@@ -494,7 +498,7 @@
 		$map = array();
 		$map2 = array();
 		$now = time();
-		$exceed = $now + 3600;
+		$exceed = $now + 259200;
 		$expire = $now - 259200;
 
 		foreach ($chunks as $chunk) {

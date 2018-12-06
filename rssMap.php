@@ -80,20 +80,27 @@
 		}
 
 		private function cna () {
-			$url = 'http://www.cna.com.tw/about/rss.aspx';
-			$doc = phpQuery::newDocument(file_get_contents($url));
+			$url = 'http://rss.cna.com.tw/rsscna/';
+			$doc = phpQuery::newDocument(mb_convert_encoding(file_get_contents($url), 'UTF-8', 'BIG5'));
 
 			$map = array();
 
-			foreach ($doc['.subscribe li'] as $li) {
-				$li = pq($li);
-				$html = $li->html();
-				$start = strpos($html, "\t") + 1;
-				$label = substr($html, $start, strpos($html, '<a ') - $start);
+			foreach ($doc['td.tab_2 > a#p_menu'] as $anchor) {
+				$anchor = pq($anchor);
+				$href = $anchor->attr('href');
+
+				if (substr($href, -9) === '_opml.xml' ||
+					substr($href, -5) === '/opml') {
+					continue;
+				}
+
+				if (substr($href, 0, 4) !== 'http') {
+					$href = 'http://rss.cna.com.tw/' . $href;
+				}
 
 				$map[] = array(
-						'label' => $label,
-						'url' => $li['a']->attr('href')
+						'label' => $anchor->text(),
+						'url' => $href
 					);
 			}
 
@@ -231,7 +238,7 @@
 		)
 	);
 
-	file_put_contents(__DIR__ . '/rssMap.json', json_encode($map));
+	file_put_contents(__DIR__ . '/rssMap.json', json_encode($map, JSON_PRETTY_PRINT));
 
 
 	$spent_time = time() - $start_time;
