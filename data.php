@@ -47,7 +47,7 @@
 					$xml = curl_exec($ch);
 				}
 
-				$doc = phpQuery::newDocumentXML(str_replace(array('', '', '&'), array('', '', '&amp;'), $xml));
+				$doc = phpQuery::newDocumentXML($xml);
 			} catch (Exception $e) {
 				echo "Loading RSS Fialed: $url\n";
 			}
@@ -67,7 +67,7 @@
 				}
 
 				$link = $item['link']->eq(0)->text();
-				$description = htmlspecialchars_decode(htmlspecialchars_decode(str_replace(array('<![CDATA[', ']]>'), '', $item['description']->html())));
+				$description = $item['description']->text();
 				$image = $item['image url']->eq(0)->text();
 
 				$ref =& $data[];
