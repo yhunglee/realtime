@@ -45,16 +45,17 @@
 			foreach ($doc['.each_level'] as $section) {
 				$section = pq($section);
 
-				if (str_replace(' ', '', $section['header > h1 > a']->text()) !== '即時新聞總覽') {
-					continue;
-				}
-
 				foreach ($section['ul li a'] as $anchor) {
 					$anchor = pq($anchor);
+					$href = $anchor->attr('href');
+
+					if (strpos($href, '/realtime/') === false) {
+						continue;
+					}
 
 					$map[] = array(
 							'label' => $anchor->text(),
-							'url' => 'https://tw.appledaily.com/' . $anchor->attr('href')
+							'url' => 'https://tw.appledaily.com/' . $href
 						);
 				}
 			}
