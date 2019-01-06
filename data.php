@@ -456,7 +456,7 @@
 
 					$data[] = array(
 						'link' => $anchor->attr('href'),
-						'timestamp' => strtotime($div['time']->attr('datetime')),
+						'timestamp' => strtotime($div['time']->attr('datetime')) - 28800, // NOWnews provides incorrect timezone.
 						'source' => 'nownews',
 						'title' => $anchor->attr('title'),
 						'description' => '',
