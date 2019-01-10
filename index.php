@@ -133,7 +133,7 @@
 
 	foreach (json_decode(file_get_contents(__DIR__ . "/data/$page.json"), true) as $item) {
 		$timestamp = $item['timestamp'];
-		$description = $item['description'];
+		$description = preg_replace('/align\s*=\s*"[^"]*"/', '', $item['description']);
 		$source = $sourceMap[$item['source']];
 
 		if (isset($item['image'])) {
