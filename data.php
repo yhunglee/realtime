@@ -146,14 +146,6 @@
 				}
 
 				switch ($source) {
-					case 'appledaily':
-						if (substr($link, -2) === '//') {
-							$link = substr($link, 0, -2);
-						}
-
-						$description = '';
-						$category = $item['rss']['label'];
-						break;
 					case 'ettoday':
 						if (($pos = strpos($description, '<div class="feedflare">')) !== false) {
 							$description = substr($description, 0, $pos);
@@ -315,6 +307,11 @@
 
 					$href = $anchor->attr('href');
 					$tokens = explode('/', $href);
+
+					if (count($tokens) === 1) {
+						continue;
+					}
+
 					$token = $tokens[2];
 					$domain = substr($token, 0, strpos($token, '.'));
 					$category = $map[$domain === 'news' ? $tokens[4] : $domain];
@@ -491,6 +488,47 @@
 
 			return $data;
 		}
+
+		private function appledaily() {
+			$data = array();
+
+			for ($i = 1; $i <= 10; ++$i) {
+				$doc = phpQuery::newDocument(file_get_contents('https://tw.appledaily.com/new/realtime/' . $i));
+
+				foreach ($doc['#maincontent ul.rtddd > li.rtddt > a'] as $anchor) {
+					$anchor = pq($anchor);
+
+					$title = $anchor['h1']->text();
+
+					$pos = strrpos($title, '(');
+
+					if ($pos !== false) {
+						$title = substr($title, 0, $pos);
+					}
+
+					$href = $anchor->attr('href');
+
+					$tokens = explode('/', $href);
+					$date = $tokens[count($tokens) - 3];
+					$year = intval(substr($date, 0, 4));
+					$month = intval(substr($date, 4, 2));
+					$day = intval(substr($date, 6, 2));
+					$time = $anchor['time']->text();
+
+
+					$data[] = array(
+							'title' => $title,
+							'link' => $href,
+							'category' => $anchor['h2']->text(),
+							'timestamp' => strtotime("$year/$month/$day $time"),
+							'description' => '',
+							'source' => 'appledaily'
+						);
+				}
+			}
+
+			return $data;
+		}
 	}
 
 	function combine($chunks) {
@@ -557,7 +595,8 @@
 
 	while (pcntl_wait($status) !== -1);
 
-	$sources = array('chinatimes', 'libertytimes', 'cna', 'ettoday', 'nownews', 'setn');
+
+	$sources = array('chinatimes', 'libertytimes', 'cna', 'ettoday', 'nownews', 'setn', 'appledaily');
 
 	foreach ($sources as $source) {
 		$pid = pcntl_fork();

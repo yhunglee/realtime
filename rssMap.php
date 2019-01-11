@@ -36,33 +36,6 @@
 			return $map;
 		}
 
-		private function appledaily () {
-			$url = 'https://tw.appledaily.com/rss';
-			$doc = phpQuery::newDocument(file_get_contents($url));
-
-			$map = array();
-
-			foreach ($doc['.each_level'] as $section) {
-				$section = pq($section);
-
-				foreach ($section['ul li a'] as $anchor) {
-					$anchor = pq($anchor);
-					$href = $anchor->attr('href');
-
-					if (strpos($href, '/realtime/') === false) {
-						continue;
-					}
-
-					$map[] = array(
-							'label' => $anchor->text(),
-							'url' => 'https://tw.appledaily.com/' . $href
-						);
-				}
-			}
-
-			return $map;
-		}
-
 		private function libertytimes () {
 			$doc = phpQuery::newDocument(file_get_contents('http://news.ltn.com.tw/service?p=8'));
 			$map = array();
@@ -185,7 +158,7 @@
 
 	$start_time = time();
 
-	$sources = array('chinatimes', 'appledaily', 'libertytimes', 'cna', 'storm', 'newtalk', 'ettoday');
+	$sources = array('chinatimes', 'libertytimes', 'cna', 'storm', 'newtalk', 'ettoday');
 
 	foreach ($sources as $source) {
         $pid = pcntl_fork();
