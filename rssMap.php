@@ -4,6 +4,8 @@
 
 	require(__DIR__ . '/phpQuery/phpQuery.php');
 
+	$proxies = json_decode(file_get_contents('proxies.json'), true);
+
 	class RssWorker {
 		private $source;
 
@@ -128,8 +130,21 @@
 		}
 
 		private function ettoday () {
-			$url = 'http://www.ettoday.net/events/news-express/epaper.php';
-			$doc = phpQuery::newDocument(file_get_contents($url));
+			global $proxies;
+
+			$url = 'https://www.ettoday.net/events/news-express/epaper.php';
+
+			$html = file_get_contents($url);
+
+			if ($html === false) {
+				$ch = curl_init();
+				curl_setopt($ch, CURLOPT_URL, $url);
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+				curl_setopt($ch, CURLOPT_PROXY, $proxies[rand(0, count($proxies) - 1)]);
+				$html = curl_exec($ch);
+			}
+
+			$doc = phpQuery::newDocument($html);
 
 			$map = array();
 
