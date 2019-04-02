@@ -18,26 +18,6 @@
 			file_put_contents(__DIR__ . '/temp/r.' . $source, json_encode($this->$source()));
 		}
 
-		private function chinatimes () {
-			$url = 'http://www.chinatimes.com/syndication/rss';
-			$tokens = explode('<li>即時新聞', file_get_contents($url));
-			$token = trim($tokens[1]);
-			$doc = phpQuery::newDocument(substr($token, 0, strpos($token, '</ul>') + 5));
-
-			$map = array();
-
-			foreach ($doc['.rssli'] as $li) {
-				$li = pq($li);
-
-				$map[] = array(
-						'label' => trim($li['span']->eq(0)->text()),
-						'url' => $li['a']->attr('href')
-					);
-			}
-
-			return $map;
-		}
-
 		private function libertytimes () {
 			$doc = phpQuery::newDocument(file_get_contents('http://news.ltn.com.tw/service/8'));
 			$map = array();
@@ -173,7 +153,7 @@
 
 	$start_time = time();
 
-	$sources = array('chinatimes', 'libertytimes', 'cna', 'storm', 'newtalk', 'ettoday');
+	$sources = array('libertytimes', 'cna', 'storm', 'newtalk', 'ettoday');
 
 	foreach ($sources as $source) {
         $pid = pcntl_fork();
