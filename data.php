@@ -341,7 +341,7 @@
 			$date = date('Y-n-j');
 
 			for ($i = 1; $i <= 10; ++$i) {
-				$url = "http://www.ettoday.net/news/news-list-$date-0-$i.htm";
+				$url = "https://www.ettoday.net/news/news-list-$date-0-$i.htm";
 
 				try {
 					$html = file_get_contents($url);
