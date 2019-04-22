@@ -354,7 +354,7 @@
 						$html = curl_exec($ch);
 					}
 	
-					$doc = phpQuery::newDocument($xml);
+					$doc = phpQuery::newDocument($html);
 				} catch (Exception $e) {
 					echo "Loading ETtoday Fialed: $url\n";
 				}
