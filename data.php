@@ -335,11 +335,29 @@
 		}
 
 		private function ettoday () {
+			global $proxies;
+
 			$data = array();
 			$date = date('Y-n-j');
 
 			for ($i = 1; $i <= 10; ++$i) {
-				$doc = phpQuery::newDocument(file_get_contents("http://www.ettoday.net/news/news-list-$date-0-$i.htm"));
+				$url = "http://www.ettoday.net/news/news-list-$date-0-$i.htm";
+
+				try {
+					$html = file_get_contents($url);
+	
+					if ($html === false) {
+						$ch = curl_init();
+						curl_setopt($ch, CURLOPT_URL, $url);
+						curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+						curl_setopt($ch, CURLOPT_PROXY, $proxies[rand(0, count($proxies) - 1)]);
+						$html = curl_exec($ch);
+					}
+	
+					$doc = phpQuery::newDocument($xml);
+				} catch (Exception $e) {
+					echo "Loading ETtoday Fialed: $url\n";
+				}
 
 				foreach ($doc['#all-news-list h3'] as $h3) {
 					$h3 = pq($h3);
