@@ -402,15 +402,16 @@
 			for ($i = 1; $i <= 10; ++$i) {
 				$doc = phpQuery::newDocument(file_get_contents('http://www.chinatimes.com/realtimenews?page=' . $i));
 
-				foreach ($doc['.np_alllist .listRight li'] as $li) {
-					$li = pq($li);
-					$anchor = $li['h2 > a'];
+				foreach ($doc['.article-list li .col'] as $div) {
+					$div = pq($div);
+					$anchor = $div['.title > a'];
+					$meta = $div['.meta-info'];
 
 					$data[] = array(
 							'title' => trim($anchor->text()),
 							'link' => 'http://www.chinatimes.com' . $anchor->attr('href'),
-							'category' => trim($li['.kindOf > a']->text()),
-							'timestamp' => strtotime($li['time']->attr('datetime')),
+							'category' => trim($meta['.category > a']->text()),
+							'timestamp' => strtotime($meta['time']->attr('datetime')),
 							'description' => '',
 							'source' => 'chinatimes'
 						);
