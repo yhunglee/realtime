@@ -444,33 +444,24 @@
 
 			$ch = curl_init();
 
-			curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36');
+			curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36');
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-			for ($i = 1; $i <= 10; ++$i) {
-				$url = $i === 1 ?
-					'https://www.nownews.com' :
-					"https://www.nownews.com/page/$i/";
+			curl_setopt($ch, CURLOPT_URL, 'https://www.nownews.com/WirelessFidelity/staticFiles/nownewsIndexpage/indexpageCacheJson');
 
-				curl_setopt($ch, CURLOPT_URL, $url);
+			$json = curl_exec($ch);
 
-				$html = curl_exec($ch);
+			$items = json_decode($json, true);
 
-				$doc = phpQuery::newDocument($html);
-
-				foreach ($doc['.td-block-row .td_module_wrap'] as $div) {
-					$div = pq($div);
-					$anchor = $div['.td-module-thumb > a'];
-
-					$data[] = array(
-						'link' => $anchor->attr('href'),
-						'timestamp' => strtotime($div['time']->attr('datetime')) - 28800, // NOWnews provides incorrect timezone.
-						'source' => 'nownews',
-						'title' => $anchor->attr('title'),
-						'description' => '',
-						'image' => $anchor['img']->attr('src')
-					);
-				}
+			foreach ($items as $item) {
+				$data[] = array(
+					'link' => $item['link'],
+					'timestamp' => strtotime($item['formatStartedAt']),
+					'source' => 'nownews',
+					'title' => $item['title'],
+					'description' => '',
+					'image' => $item['mainPhotoUrl']
+				);
 			}
 
 			return $data;
