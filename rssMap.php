@@ -19,7 +19,7 @@
 		}
 
 		private function libertytimes () {
-			$doc = phpQuery::newDocument(file_get_contents('http://news.ltn.com.tw/service/8'));
+			$doc = phpQuery::newDocument(file_get_contents('https://service.ltn.com.tw/RSS'));
 			$map = array();
 
 			foreach ($doc['.ltnrss tr']->slice(1) as $tr) {
