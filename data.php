@@ -477,9 +477,15 @@
 					$div = pq($div);
 					$anchor = $div['.view-li-title > a'];
 
+					$href = $anchor->attr('href');
+
+					if (substr($href, 0, 8) !== 'https://') {
+						$href = 'https://www.setn.com' . $href;
+					}
+
 					$data[] = array(
 							'title' => trim($anchor->text()),
-							'link' => 'https://www.setn.com/' . $anchor->attr('href'),
+							'link' => $href,
 							'category' => $div['.newslabel-tab > a']->text(),
 							'timestamp' => strtotime(date('Y') . '/' . $div['time']->text()),
 							'description' => '',
