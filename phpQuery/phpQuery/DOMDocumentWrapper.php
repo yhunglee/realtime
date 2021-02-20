@@ -141,8 +141,10 @@ class DOMDocumentWrapper {
 		$documentCharset = $this->charsetFromHTML($markup);
 		$addDocumentCharset = false;
 		if ($documentCharset) {
-			$charset = $documentCharset;
-			$markup = $this->charsetFixHTML($markup);
+                  $charset = $documentCharset;
+                  if ( strcasecmp($documentCharset, phpQuery::$defaultCharset) != 0 ) {
+                    $markup = $this->charsetFixHTML($markup);
+                  }
 		} else if ($requestedCharset) {
 			$charset = $requestedCharset;
 		}
